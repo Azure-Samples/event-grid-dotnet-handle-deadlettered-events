@@ -18,7 +18,7 @@ namespace DeadLetterSample
         [FunctionName("ProcessDeadLetter")]
         public static void Run([EventGridTrigger]JObject eventGridEvent, TraceWriter log)
         {
-            log.Info($"C# Event grid trigger function begun");
+            log.Info($"C# Event grid trigger function has begun...");
             const string StorageBlobCreatedEvent = "Microsoft.Storage.BlobCreated";
 
 

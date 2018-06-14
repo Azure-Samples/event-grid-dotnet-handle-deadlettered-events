@@ -61,7 +61,7 @@ namespace EGManageTopicsAndEventSubscriptions
         const string DefaultLocation = "westus";
 
         // An example would be /subscriptions/{subid}/resourceGroups/{rg}/providers/Microsoft.Storage/storageAccounts/{storageAccount}
-        const string DeadLetterDestinationResourceId = "replace-with-your-storage-blobs-resource-id";
+        const string DeadLetterDestinationResourceId = "replace-with-your-storage-account-resource-id";
         const string StorageBlobContainerName = "replace-with-storage-blob-container-name";
 
         //The following method will enable you to use the token to create credentials

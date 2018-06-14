@@ -1,6 +1,3 @@
-
-
-
 services: event-grid
 platforms: dotnet
 author: sanariel
@@ -61,7 +58,7 @@ This sample demonstrates:
  3. Creating Azure Functions:
 	- Build the ***function-app*** in Visual Studio. Right click on the project in Visual Studio, and click Publish to publish the     	*WebhookSubscriptionFunction* and 
 	   *ProcessDeadLetterFunction* to the cloud as an Azure Function. 
-	   For more details, please refer to the steps described [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-develop-vs.). 
+	   For more details, please refer to the steps described [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-your-first-function-visual-studio#publish-the-project-to-azure). 
 	- Once you have published this as an Azure function, navigate to the newly published *WebhookSubscriptionFunction* in Azure Portal. Click on "Get Function URL" button for the *WebhookSubscriptionFunction* and copy the function URL.
 	-  Navigate to the *ProcessDeadLetter* function in Azure Portal. 
 	   Click on the "Add Event Grid subscription" option to create a new event subscription for this event grid trigger function.
