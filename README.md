@@ -9,7 +9,7 @@ author: sanariel
 # Microsoft Azure Event Grid Management Samples for C#
 
 ## Contents
-1. The ***event-grid-dotnet-dead-lettering*** project
+1. The ***event-subscription-with-dead-lettering*** project
 	- This project contains a sample that demonstrates how to create event subscriptions with dead-letter destinations and 	retry policies.
 2. The ***function-app*** project.
 	- This project contains:
