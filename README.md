@@ -1,7 +1,7 @@
+---
 services: event-grid
 platforms: dotnet
-author: sanariel
-
+author: sanariel 
 ---
 # Microsoft Azure Event Grid Management Samples for C#
 
@@ -102,7 +102,7 @@ This sample demonstrates:
 	- Provide the *WebhookEventSubscription* Azure function URL from step 2. as a web-hook destination endpoint for the subscription. 
 	- Provide the Azure Storage Blob ResourceId and Container Name for the dead letter destination.
 	- Select appropriate values for the retry policy configuration. 
-	- Replac all the values, build and run the project to create the event subscription.
+	- Replace all the values, build and run the project to create the event subscription.
 	- Alternately, [This](https://docs.microsoft.com/en-us/azure/event-grid/scripts/event-grid-cli-subscribe-custom-topic) shows how to create an event subscription using the CLI.
 
  5. Publish Events:
