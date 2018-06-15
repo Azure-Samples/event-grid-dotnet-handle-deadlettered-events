@@ -111,10 +111,6 @@ namespace EGManageTopicsAndEventSubscriptions
                 // Create a new Event Grid topic in a resource group
                 await CreateEventGridTopicAsync(ResourceGroupName, TopicName, eventGridManagementClient);
 
-                // Get the keys for the topic
-                TopicSharedAccessKeys topicKeys = await eventGridManagementClient.Topics.ListSharedAccessKeysAsync(ResourceGroupName, TopicName);
-                Console.WriteLine($"The key1 value of topic {TopicName} is: {topicKeys.Key1}");
-
                 // Create an event subscription
                 await CreateEventGridEventSubscriptionAsync(ResourceGroupName, TopicName, EventSubscriptionName, eventGridManagementClient, EndpointUrl);  
 

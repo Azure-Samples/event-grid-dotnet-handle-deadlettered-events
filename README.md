@@ -47,7 +47,7 @@ This sample demonstrates:
  The following are the steps for running this sample end to end:
 
  1. Create an Event Grid topic: 
-	 - You will need to first create an Event Grid topic. 
+	 - Create an Event Grid topic first. 
 	 - Follow steps for creating a topic [here](https://docs.microsoft.com/en-us/azure/event-grid/scripts/event-grid-cli-create-custom-topic.). 
 	 - Make a note of the topic name and resource group name. 
 
@@ -59,16 +59,16 @@ This sample demonstrates:
 	- Build the ***function-app*** in Visual Studio. Right click on the project in Visual Studio, and click Publish to publish the     	*WebhookSubscriptionFunction* and 
 	   *ProcessDeadLetterFunction* to the cloud as an Azure Function. 
 	   For more details, please refer to the steps described [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-your-first-function-visual-studio#publish-the-project-to-azure). 
-	- Once you have published this as an Azure function, navigate to the newly published *WebhookSubscriptionFunction* in Azure Portal. Click on "Get Function URL" button for the *WebhookSubscriptionFunction* and copy the function URL.
+	- Once this is published as an Azure function, navigate to the newly published *WebhookSubscriptionFunction* in Azure Portal. Click on "Get Function URL" button for the *WebhookSubscriptionFunction* and copy the function URL.
 	-  Navigate to the *ProcessDeadLetter* function in Azure Portal. 
 	   Click on the "Add Event Grid subscription" option to create a new event subscription for this event grid trigger function.
-	   For the Create Event Subscription form you see, follow the below guidelines:
+	   For the Create Event Subscription form, follow the below guidelines:
 			Topic Type: Select Storage Accounts as the Topic Type 
 			Resource Group: use an existing Resource Group (same as the dead letter storage account in Step 3)
-			Instance: You should see the storage account created in step 3 under the Instance dropdown
+			Instance: Look for the storage account created in step 3 under the Instance dropdown
 			SubscriberType: Webhook
 
-		Alternately, you can use the below azure shell commands to create this event susbscription:
+		Alternately, use the below azure shell commands to create this event susbscription:
 		
 		```
 		#replace values within <> with appropriate settings
@@ -98,23 +98,24 @@ This sample demonstrates:
 			- *ProcessDeadLetterFunction* to process dead letter events
 	
  4. Create an Event Subscription
-	- Create an event subscription to the topic created in step 1 using the ***event-grid-dotnet-dead-lettering*** project.
+	- Create an event subscription to the topic created in step 1 using the ***event-subscription-with-dead-lettering*** project.
 	- Provide the *WebhookEventSubscription* Azure function URL from step 2. as a web-hook destination endpoint for the subscription. 
 	- Provide the Azure Storage Blob ResourceId and Container Name for the dead letter destination.
 	- Select appropriate values for the retry policy configuration. 
-	- [This](https://docs.microsoft.com/en-us/azure/event-grid/scripts/event-grid-cli-subscribe-custom-topic) further describes how to create an event subscription.
+	- Replac all the values, build and run the project to create the event subscription.
+	- Alternately, [This](https://docs.microsoft.com/en-us/azure/event-grid/scripts/event-grid-cli-subscribe-custom-topic) shows how to create an event subscription using the CLI.
 
  5. Publish Events:
-	- You can use the Event Grid Publisher [project](https://github.com/Azure-Samples/event-grid-dotnet-publish-consume-events/tree/master/EventGridPublisher) to publish events.
+	- Use the Event Grid Publisher [project](https://github.com/Azure-Samples/event-grid-dotnet-publish-consume-events/tree/master/EventGridPublisher) to publish events.
  6. Verify Receipt of Events: 
 	In this step, we will be verifying that the events are delivered to the event subscription function. Here are the steps:
-	- In the Logs view of the *WebhookSubscriptionFunction*, verify that you can see the logs that show the receipt of the EventGridEvent.
-	- Since the function responds with a Bad Request to events, you should start seeing those events appear in the dead letter destination.
-	- Verify you received the events in the dead letter destination by looking at the blob files under the storage account through the portal.
+	- In the Logs view of the *WebhookSubscriptionFunction*, verify look through the logs that show the receipt of the EventGridEvent.
+	- Since the function responds with a Bad Request to events, should start seeing those events appear in the dead letter destination.
+	- Verify the receipt of events in the dead letter destination by looking at the blob files under the storage account through the portal.
 
  7. Process the Dead Letter Events:
-	- Look at the Logs view for the *ProcessDeadLetter* function in the portal. You should see the function being triggered by the *BlobCreated* event whenever a new dead letter event is delivered to the blob container/dead letter destination. 
-	- Editing the *ProcessDeadLetter* function and republishing should allow you to process the dead letter events. 
+	- Look at the Logs view for the *ProcessDeadLetter* function in the portal. The function should be triggered by the *BlobCreated* event whenever a new dead letter event is delivered to the blob container/dead letter destination. 
+	- Editing the *ProcessDeadLetter* function and republishing should allow the processing of dead letter events. 
 	   Note: Look for The ***TODO*** comment in the *ProcessDeadLetter* function to add code to further process the dead letter events.
 
 ## Resources
