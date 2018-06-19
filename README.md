@@ -1,57 +1,126 @@
-# Project Name
+---
+services: event-grid
+platforms: dotnet
+author: sanariel 
+---
+# Microsoft Azure Event Grid Management Samples for C#
 
-(short, 1-3 sentenced, description of the project)
+## Contents
+1. The ***event-subscription-with-dead-lettering*** project
+	- This project contains a sample that demonstrates how to create event subscriptions with dead-letter destinations and 	retry policies.
+2. The ***function-app*** project.
+	- This project contains:
+		- A function sample, ***WebhookSubscriptionFunction*** that acts as a web-hook subscription endpoint for the event subscription.
+		- A function sample, ***ProcessDeadLetter*** that processes dead letter events.
 
-## Features
+## Overview
 
-This project framework provides the following features:
+This sample demonstrates:
+- How to create an event subscription with webhook destination, storage-blob dead letter destination and retry policy configuration 
+- How to create a function that gets triggered by the storage blobs and process dead letter events.
 
-* Feature 1
-* Feature 2
-* ...
+ We will follow the following steps through this sample:
+ 1. Create an event grid event subscription with a webhook endpoint, dead letter destination and retry policies options.
+	- Create a function which will serve as the web-hook endpoint for the event subscription. The    	*WebhookSubscriptionFunction*  under the function-app handles the 
+	   subscription handshake. It returns a 400 Bad Request to all other incoming requests. 
+	   *Note*: *the function is programmed in such a way to demonstrate the workings of dead letter destinations.
+		A 400 Bad Request will cause the events to end up in the dead letter destination once they expire based on the retry policy.*
+	 - Create an Azure Storage Blob Container which will be our dead letter destination for the event subscription.
+ 2. Demonstrate how to process dead letter events. 
+	- Create a function of type event grid trigger which will process dead letter events.
 
-## Getting Started
+
 
 ### Prerequisites
+- .NET Core 2.0 or higher
 
-(ideally very short, if any)
-
-- OS
-- Library version
-- ...
+### Dependencies
+- Event Grid management plane SDK (Microsoft.Azure.Management.EventGrid).
 
 ### Installation
+- Visual Studio 2017 Version 15.5 or later, with "Azure Development" workload enabled.
+- Azure Functions Extension in Visual Studio 2017.
+- Clone this repository onto your local machine. Compile the samples inside Visual Studio, the required Microsoft Azure Event Grid SDK components will automatically be downloaded from nuget.org.
+ 
 
-(ideally very short)
+ ## Running the Sample
+ The following are the steps for running this sample end to end:
 
-- npm install [package name]
-- mvn install
-- ...
+ 1. Create an Event Grid topic: 
+	 - Create an Event Grid topic first. 
+	 - Follow steps for creating a topic [here](https://docs.microsoft.com/en-us/azure/event-grid/scripts/event-grid-cli-create-custom-topic.). 
+	 - Make a note of the topic name and resource group name. 
 
-### Quickstart
-(Add steps to get up and running quickly)
+ 2. Create a Storage Blob Container
+	  - Create an azure storage blob container as a destination for the dead letter events. 
+	  - Follow steps for the same [here.](https://docs.microsoft.com/en-us/azure/storage/common/storage-create-storage-account%5C) 
 
-1. git clone [repository clone url]
-2. cd [respository name]
-3. ...
+ 3. Creating Azure Functions:
+	- Build the ***function-app*** in Visual Studio. Right click on the project in Visual Studio, and click Publish to publish the     	*WebhookSubscriptionFunction* and 
+	   *ProcessDeadLetterFunction* to the cloud as an Azure Function. 
+	   For more details, please refer to the steps described [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-your-first-function-visual-studio#publish-the-project-to-azure). 
+	- Once this is published as an Azure function, navigate to the newly published *WebhookSubscriptionFunction* in Azure Portal. Click on "Get Function URL" button for the *WebhookSubscriptionFunction* and copy the function URL.
+	-  Navigate to the *ProcessDeadLetter* function in Azure Portal. 
+	   Click on the "Add Event Grid subscription" option to create a new event subscription for this event grid trigger function.
+	   For the Create Event Subscription form, follow the below guidelines:
+			Topic Type: Select Storage Accounts as the Topic Type 
+			Resource Group: use an existing Resource Group (same as the dead letter storage account in Step 3)
+			Instance: Look for the storage account created in step 3 under the Instance dropdown
+			SubscriberType: Webhook
 
+		Alternately, use the below azure shell commands to create this event susbscription:
+		
+		```
+		#replace values within <> with appropriate settings
+		set azure_subscription_id=<azure_subscription_id>
+		set storage_account_name=<storage_account_name>
+		set resource_group_name=<resource_group_name>
+		set function_url=<endpoint> 
+		set event_subscription_name=<event_subscription_name>
+		
+		#setting azure subscription id
+		az account set --subscription $azure_subscription_id  
+		
+		storageid=$(az storage account show --name $storage_account_name --resource-group $resource_group_name --			query id --output tsv)
+		endpoint=$endpoint
+		
+		#create event grid subscription 	
+		az eventgrid event-subscription create \
+		--resource-id $storageid \
+		--name $event_subscription_name \
+		--endpoint $endpoint
+		```	
 
-## Demo
+		*Note: In the above commands, the <storage_account_name> and <resource_group_name> should be the same as the account created in step 2.  The <function_url> refers to the Url for the ProcessDeadLetter function.*
 
-A demo app is included to show how to use the project.
+	- In this step we just created and deployed two functions under the function-app project.	
+			- *WebhookSubscriptionFunction* to serve as a webhook endpoint for the subscription we will create in the next step
+			- *ProcessDeadLetterFunction* to process dead letter events
+	
+ 4. Create an Event Subscription
+	- Create an event subscription to the topic created in step 1 using the ***event-subscription-with-dead-lettering*** project.
+	- Provide the *WebhookEventSubscription* Azure function URL from step 2. as a web-hook destination endpoint for the subscription. 
+	- Provide the Azure Storage Blob ResourceId and Container Name for the dead letter destination.
+	- Select appropriate values for the retry policy configuration. 
+	- Replace all the values, build and run the project to create the event subscription.
+	- Alternately, [This](https://docs.microsoft.com/en-us/azure/event-grid/scripts/event-grid-cli-subscribe-custom-topic) shows how to create an event subscription using the CLI.
 
-To run the demo, follow these steps:
+ 5. Publish Events:
+	- Use the Event Grid Publisher [project](https://github.com/Azure-Samples/event-grid-dotnet-publish-consume-events/tree/master/EventGridPublisher) to publish events.
+ 6. Verify Receipt of Events: 
+	In this step, we will be verifying that the events are delivered to the event subscription function. Here are the steps:
+	- In the Logs view of the *WebhookSubscriptionFunction*, verify look through the logs that show the receipt of the EventGridEvent.
+	- Since the function responds with a Bad Request to events, should start seeing those events appear in the dead letter destination.
+	- Verify the receipt of events in the dead letter destination by looking at the blob files under the storage account through the portal.
 
-(Add steps to start up the demo)
-
-1.
-2.
-3.
+ 7. Process the Dead Letter Events:
+	- Look at the Logs view for the *ProcessDeadLetter* function in the portal. The function should be triggered by the *BlobCreated* event whenever a new dead letter event is delivered to the blob container/dead letter destination. 
+	- Editing the *ProcessDeadLetter* function and republishing should allow the processing of dead letter events. 
+	   Note: Look for The ***TODO*** comment in the *ProcessDeadLetter* function to add code to further process the dead letter events.
 
 ## Resources
 
 (Any additional resources or related projects)
 
-- Link to supporting information
-- Link to similar sample
-- ...
+- https://docs.microsoft.com/en-us/azure/event-grid/overview
+- https://docs.microsoft.com/en-us/azure/azure-functions/functions-develop-vs
