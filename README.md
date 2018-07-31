@@ -3,7 +3,7 @@ services: event-grid
 platforms: dotnet
 author: sanariel 
 ---
-# Microsoft Azure Event Grid Management Samples for C#
+# Azure Event Grid Dead Letter Samples for .NET
 
 ## Contents
 1. The ***event-subscription-with-dead-lettering*** project
@@ -17,7 +17,7 @@ author: sanariel
 
 This sample demonstrates:
 - How to create an event subscription with webhook destination, storage-blob dead letter destination and retry policy configuration 
-- How to create a function that gets triggered by the storage blobs and process dead letter events.
+- How to create a function that consumes dead letter events.
 
  We will follow the following steps through this sample:
  1. Create an event grid event subscription with a webhook endpoint, dead letter destination and retry policies options.
