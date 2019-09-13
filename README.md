@@ -1,8 +1,13 @@
 ---
-services: event-grid
-platforms: dotnet
-author: sanariel 
+page_type: sample
+languages:
+- csharp
+products:
+- azure
+description: "The event-subscription-with-dead-lettering project"
+urlFragment: event-grid-dotnet-handle-deadlettered-events
 ---
+
 # Azure Event Grid Dead Letter Samples for .NET
 
 ## Contents
