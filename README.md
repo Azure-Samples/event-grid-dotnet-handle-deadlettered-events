@@ -53,7 +53,7 @@ This sample demonstrates:
 
  1. Create an Event Grid topic: 
 	 - Create an Event Grid topic first. 
-	 - Follow steps for creating a topic [here](https://docs.microsoft.com/en-us/azure/event-grid/scripts/event-grid-cli-create-custom-topic.). 
+	 - Follow steps for creating a topic [here](https://docs.microsoft.com/en-us/azure/event-grid/scripts/event-grid-cli-create-custom-topic). 
 	 - Make a note of the topic name and resource group name. 
 
  2. Create a Storage Blob Container
