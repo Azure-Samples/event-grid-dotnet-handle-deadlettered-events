@@ -64,7 +64,7 @@ This sample demonstrates:
 	- Build the ***function-app*** in Visual Studio. Right click on the project in Visual Studio, and click Publish to publish the     	*WebhookSubscriptionFunction* and 
 	   *ProcessDeadLetterFunction* to the cloud as an Azure Function. 
 	   For more details, please refer to the steps described [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-your-first-function-visual-studio#publish-the-project-to-azure). 
-	- Once this is published as an Azure function, navigate to the newly published *WebhookSubscriptionFunction* in Azure Portal. Click on "Get Function URL" button for the *WebhookSubscriptionFunction* and copy the function URL.
+	- Once this is published as an Azure Function, navigate to the newly published *WebhookSubscriptionFunction* in Azure Portal. Click on "Get Function URL" button for the *WebhookSubscriptionFunction* and copy the function URL.
 	-  Navigate to the *ProcessDeadLetter* function in Azure Portal. 
 	   Click on the "Add Event Grid subscription" option to create a new event subscription for this event grid trigger function.
 	   For the Create Event Subscription form, follow the below guidelines:
@@ -104,7 +104,7 @@ This sample demonstrates:
 	
  4. Create an Event Subscription
 	- Create an event subscription to the topic created in step 1 using the ***event-subscription-with-dead-lettering*** project.
-	- Provide the *WebhookEventSubscription* Azure function URL from step 2. as a web-hook destination endpoint for the subscription. 
+	- Provide the *WebhookEventSubscription* Azure Function URL from step 2. as a web-hook destination endpoint for the subscription. 
 	- Provide the Azure Storage Blob ResourceId and Container Name for the dead letter destination.
 	- Select appropriate values for the retry policy configuration. 
 	- Replace all the values, build and run the project to create the event subscription.
