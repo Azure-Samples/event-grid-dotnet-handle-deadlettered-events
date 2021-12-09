@@ -2,12 +2,15 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Azure.EventGrid.Models;
+//using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Azure.Messaging.EventGrid;
+using Azure;
+using Azure.Messaging.EventGrid.SystemEvents;
 
 namespace DeadLetterSample
 {
@@ -30,7 +33,7 @@ namespace DeadLetterSample
 
             foreach (EventGridEvent eventGridEvent in eventGridEvents)
             {
-                JObject dataObject = eventGridEvent.Data as JObject;
+                JObject dataObject = eventGridEvent.Data.ToObjectFromJson<JObject>();
 
                 // Deserialize the event data into the appropriate type based on event type
                 if (string.Equals(eventGridEvent.EventType, SubscriptionValidationEvent, StringComparison.OrdinalIgnoreCase))
