@@ -8,6 +8,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Azure.Messaging.EventGrid;
 using Azure.Messaging.EventGrid.SystemEvents;
 using Microsoft.Extensions.Logging;
 
@@ -23,7 +24,7 @@ namespace DeadLetterSample
 
 
             logger.LogInformation(eventGridEvent.ToString(Formatting.Indented));
-            var egEvent = eventGridEvent.ToObject<Azure.Messaging.EventGrid.EventGridEvent>();
+            var egEvent = eventGridEvent.ToObject<EventGridEvent>();
             JObject dataObject = egEvent.Data.ToObjectFromJson<JObject>();
 
             if (string.Equals(egEvent.EventType, StorageBlobCreatedEvent, StringComparison.OrdinalIgnoreCase))

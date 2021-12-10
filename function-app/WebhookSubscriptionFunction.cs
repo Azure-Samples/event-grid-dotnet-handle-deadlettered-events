@@ -7,8 +7,8 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Azure.Messaging.EventGrid;
 using Azure;
+using Azure.Messaging.EventGrid;
 using Azure.Messaging.EventGrid.SystemEvents;
 
 namespace DeadLetterSample
