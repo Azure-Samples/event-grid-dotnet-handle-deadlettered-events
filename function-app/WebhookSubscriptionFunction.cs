@@ -32,12 +32,10 @@ namespace DeadLetterSample
 
             foreach (EventGridEvent eventGridEvent in eventGridEvents)
             {
-                JObject dataObject = eventGridEvent.Data.ToObjectFromJson<JObject>();
-
                 // Deserialize the event data into the appropriate type based on event type
                 if (string.Equals(eventGridEvent.EventType, SubscriptionValidationEvent, StringComparison.OrdinalIgnoreCase))
                 {
-                    var eventData = dataObject.ToObject<SubscriptionValidationEventData>();
+                    var eventData = eventGridEvent.Data.ToObjectFromJson<SubscriptionValidationEventData>();
                     log.Info($"Got SubscriptionValidation event data, validationCode: {eventData.ValidationCode},  validationUrl: {eventData.ValidationUrl}, topic: {eventGridEvent.Topic}");
                     // Do any additional validation (as required) such as validating that the Azure resource ID of the topic matches
                     // the expected topic and then return back the below response

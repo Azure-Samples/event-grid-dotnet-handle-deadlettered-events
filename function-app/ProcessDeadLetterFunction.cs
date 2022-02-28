@@ -17,21 +17,18 @@ namespace DeadLetterSample
     public static class ProcessDeadLetterFunction
     {
         [FunctionName("ProcessDeadLetter")]
-        public static void Run([EventGridTrigger]JObject eventGridEvent, ILogger logger)
+        public static void Run([EventGridTrigger]EventGridEvent eventGridEvent, ILogger logger)
         {
             logger.LogInformation($"C# Event grid trigger function has begun...");
             const string StorageBlobCreatedEvent = "Microsoft.Storage.BlobCreated";
 
+            logger.LogInformation($"Print EventGridEvent Event attributes for Data: {eventGridEvent.Data.ToString()}, Id: {eventGridEvent.Id}, Topic: {eventGridEvent.Topic}, Subject: {eventGridEvent.Subject}, EventType: {eventGridEvent.EventType}, DataVersion: {eventGridEvent.DataVersion}, EventTime: {eventGridEvent.EventTime.ToString()}");
 
-            logger.LogInformation(eventGridEvent.ToString(Formatting.Indented));
-            var egEvent = eventGridEvent.ToObject<EventGridEvent>();
-            JObject dataObject = egEvent.Data.ToObjectFromJson<JObject>();
-
-            if (string.Equals(egEvent.EventType, StorageBlobCreatedEvent, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(eventGridEvent.EventType, StorageBlobCreatedEvent, StringComparison.OrdinalIgnoreCase))
             {
                 logger.LogInformation("Received blob created event..");
-
-                var data = dataObject.ToObject<StorageBlobCreatedEventData>();
+                eventGridEvent.TryGetSystemEventData(out object eventData);
+                var data = eventData as StorageBlobCreatedEventData;
                 logger.LogInformation($"Dead Letter Blob Url:{data.Url}");
 
                 logger.LogInformation("Reading blob data from storage account..");
