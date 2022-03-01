@@ -27,10 +27,8 @@ namespace DeadLetterSample
             if (string.Equals(eventGridEvent.EventType, StorageBlobCreatedEvent, StringComparison.OrdinalIgnoreCase))
             {
                 logger.LogInformation("Received blob created event..");
-                eventGridEvent.TryGetSystemEventData(out object eventData);
-                var data = eventData as StorageBlobCreatedEventData;
+                StorageBlobCreatedEventData data = eventGridEvent.Data.ToObjectFromJson<StorageBlobCreatedEventData>();
                 logger.LogInformation($"Dead Letter Blob Url:{data.Url}");
-
                 logger.LogInformation("Reading blob data from storage account..");
                 ProcessBlob(data.Url, logger);
             }
