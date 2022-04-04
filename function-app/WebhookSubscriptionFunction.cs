@@ -2,12 +2,14 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Azure;
+using Azure.Messaging.EventGrid;
+using Azure.Messaging.EventGrid.SystemEvents;
 
 namespace DeadLetterSample
 {
@@ -30,12 +32,10 @@ namespace DeadLetterSample
 
             foreach (EventGridEvent eventGridEvent in eventGridEvents)
             {
-                JObject dataObject = eventGridEvent.Data as JObject;
-
                 // Deserialize the event data into the appropriate type based on event type
                 if (string.Equals(eventGridEvent.EventType, SubscriptionValidationEvent, StringComparison.OrdinalIgnoreCase))
                 {
-                    var eventData = dataObject.ToObject<SubscriptionValidationEventData>();
+                    var eventData = eventGridEvent.Data.ToObjectFromJson<SubscriptionValidationEventData>();
                     log.Info($"Got SubscriptionValidation event data, validationCode: {eventData.ValidationCode},  validationUrl: {eventData.ValidationUrl}, topic: {eventGridEvent.Topic}");
                     // Do any additional validation (as required) such as validating that the Azure resource ID of the topic matches
                     // the expected topic and then return back the below response

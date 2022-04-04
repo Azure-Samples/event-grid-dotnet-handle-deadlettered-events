@@ -4,37 +4,33 @@
 using System;
 using System.Net;
 using System.IO;
-using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Azure.Messaging.EventGrid;
+using Azure.Messaging.EventGrid.SystemEvents;
+using Microsoft.Extensions.Logging;
 
 namespace DeadLetterSample
 {
     public static class ProcessDeadLetterFunction
     {
         [FunctionName("ProcessDeadLetter")]
-        public static void Run([EventGridTrigger]JObject eventGridEvent, TraceWriter log)
+        public static void Run([EventGridTrigger]EventGridEvent eventGridEvent, ILogger logger)
         {
-            log.Info($"C# Event grid trigger function has begun...");
+            logger.LogInformation($"C# Event grid trigger function has begun...");
             const string StorageBlobCreatedEvent = "Microsoft.Storage.BlobCreated";
 
+            logger.LogInformation($"Print EventGridEvent Event attributes for Data: {eventGridEvent.Data.ToString()}, Id: {eventGridEvent.Id}, Topic: {eventGridEvent.Topic}, Subject: {eventGridEvent.Subject}, EventType: {eventGridEvent.EventType}, DataVersion: {eventGridEvent.DataVersion}, EventTime: {eventGridEvent.EventTime.ToString()}");
 
-            log.Info(eventGridEvent.ToString(Formatting.Indented));
-            var egEvent = eventGridEvent.ToObject<Microsoft.Azure.EventGrid.Models.EventGridEvent>();
-            JObject dataObject = egEvent.Data as JObject;
-
-            if (string.Equals(egEvent.EventType, StorageBlobCreatedEvent, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(eventGridEvent.EventType, StorageBlobCreatedEvent, StringComparison.OrdinalIgnoreCase))
             {
-                log.Info("Received blob created event..");
-
-                var data = dataObject.ToObject<StorageBlobCreatedEventData>();
-                log.Info($"Dead Letter Blob Url:{data.Url}");
-
-                log.Info("Reading blob data from storage account..");
-                ProcessBlob(data.Url, log);
+                logger.LogInformation("Received blob created event..");
+                StorageBlobCreatedEventData data = eventGridEvent.Data.ToObjectFromJson<StorageBlobCreatedEventData>();
+                logger.LogInformation($"Dead Letter Blob Url:{data.Url}");
+                logger.LogInformation("Reading blob data from storage account..");
+                ProcessBlob(data.Url, logger);
             }
         }
 
@@ -42,7 +38,7 @@ namespace DeadLetterSample
         This function uses the blob url/location received in the BlobCreated event to fetch data from the storage container.
         Here, we perform a simple GET request on the blob url and deserialize the dead lettered events in a json array.
         */
-        public static void ProcessBlob(string url, TraceWriter log)
+        public static void ProcessBlob(string url, ILogger logger)
         {
 
             // sas key generated through the portal for your storage account used for authentication
@@ -57,13 +53,13 @@ namespace DeadLetterSample
             data.Close();
             reader.Close();
 
-            log.Info($"Dead Letter Events:{blob}");
+            logger.LogInformation($"Dead Letter Events:{blob}");
 
             // deserialize the blob into dead letter events 
             DeadLetterEvent[] dlEvents = JsonConvert.DeserializeObject<DeadLetterEvent[]>(blob);
 
             foreach (DeadLetterEvent dlEvent in dlEvents) {
-                log.Info($"Printing Dead Letter Event attributes for EventId: {dlEvent.Id}, Dead Letter Reason:{dlEvent.DeadLetterReason}, DeliveryAttempts:{dlEvent.DeliveryAttempts}, LastDeliveryOutcome:{dlEvent.LastDeliveryOutcome}, LastHttpStatusCode:{dlEvent.LastHttpStatusCode}");
+                logger.LogInformation($"Printing Dead Letter Event attributes for EventId: {dlEvent.Id}, Dead Letter Reason:{dlEvent.DeadLetterReason}, DeliveryAttempts:{dlEvent.DeliveryAttempts}, LastDeliveryOutcome:{dlEvent.LastDeliveryOutcome}, LastHttpStatusCode:{dlEvent.LastHttpStatusCode}");
                 // TODO: steps for processing the dead letter event further
             }
         }
